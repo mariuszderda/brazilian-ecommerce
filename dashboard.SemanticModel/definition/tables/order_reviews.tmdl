@@ -1,0 +1,108 @@
+table order_reviews
+	lineageTag: e924b24f-8356-4860-bc46-d63d330b4dc4
+
+	column review_id
+		dataType: string
+		lineageTag: 0d4e23ee-313c-47b7-bc25-b32ee4134d43
+		summarizeBy: none
+		sourceColumn: review_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_id
+		dataType: string
+		lineageTag: 5a665938-ca3e-4a57-b4d9-902abc6a1cce
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_score
+		dataType: int64
+		formatString: 0
+		lineageTag: a797ee5f-b286-4dc2-8211-aedec17eab97
+		summarizeBy: sum
+		sourceColumn: review_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_comment_title
+		dataType: string
+		lineageTag: 1ef0455e-d643-497f-b43b-3401f9d99eed
+		summarizeBy: none
+		sourceColumn: review_comment_title
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_comment_message
+		dataType: string
+		lineageTag: 72bb3552-7696-401e-9175-adbfcdcdd933
+		summarizeBy: none
+		sourceColumn: review_comment_message
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_creation_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d70eb1c4-1685-4824-a147-94251e21e641
+		summarizeBy: none
+		sourceColumn: review_creation_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column review_answer_timestamp
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1dec7697-4286-4459-a2f4-2f6d75d3e1c5
+		summarizeBy: none
+		sourceColumn: review_answer_timestamp
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition order_reviews = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\mariu\OneDrive\data-analyst\brazilian-ecommerce\csv\olist_order_reviews_dataset.csv"),[Delimiter=";", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}, {"Column2", type text}}),
+				    #"Trimmed Text" = Table.TransformColumns(#"Changed Type",{{"Column1", Text.Trim, type text}}),
+				    #"Split Column by Delimiter" = Table.SplitColumn(#"Trimmed Text", "Column1", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.1", "Column1.2"}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Split Column by Delimiter",{{"Column1.1", type text}, {"Column1.2", type text}}),
+				    #"Trimmed Text1" = Table.TransformColumns(#"Changed Type1",{{"Column1.2", Text.Trim, type text}}),
+				    #"Split Column by Delimiter1" = Table.SplitColumn(#"Trimmed Text1", "Column1.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.1", "Column1.2.2"}),
+				    #"Changed Type2" = Table.TransformColumnTypes(#"Split Column by Delimiter1",{{"Column1.2.1", type text}, {"Column1.2.2", type text}}),
+				    #"Trimmed Text2" = Table.TransformColumns(#"Changed Type2",{{"Column1.2.2", Text.Trim, type text}}),
+				    #"Split Column by Delimiter2" = Table.SplitColumn(#"Trimmed Text2", "Column1.2.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.2.1", "Column1.2.2.2"}),
+				    #"Changed Type3" = Table.TransformColumnTypes(#"Split Column by Delimiter2",{{"Column1.2.2.1", type text}, {"Column1.2.2.2", type text}}),
+				    #"Trimmed Text3" = Table.TransformColumns(#"Changed Type3",{{"Column1.2.2.2", Text.Trim, type text}}),
+				    #"Split Column by Delimiter3" = Table.SplitColumn(#"Trimmed Text3", "Column1.2.2.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, true), {"Column1.2.2.2.1", "Column1.2.2.2.2"}),
+				    #"Changed Type4" = Table.TransformColumnTypes(#"Split Column by Delimiter3",{{"Column1.2.2.2.1", type text}, {"Column1.2.2.2.2", type text}}),
+				    #"Trimmed Text4" = Table.TransformColumns(#"Changed Type4",{{"Column1.2.2.2.1", Text.Trim, type text}}),
+				    #"Split Column by Delimiter4" = Table.SplitColumn(#"Trimmed Text4", "Column1.2.2.2.1", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, true), {"Column1.2.2.2.1.1", "Column1.2.2.2.1.2"}),
+				    #"Changed Type5" = Table.TransformColumnTypes(#"Split Column by Delimiter4",{{"Column1.2.2.2.1.1", type text}, {"Column1.2.2.2.1.2", type text}}),
+				    #"Trimmed Text5" = Table.TransformColumns(#"Changed Type5",{{"Column1.2.2.2.1.1", Text.Trim, type text}}),
+				    #"Split Column by Delimiter5" = Table.SplitColumn(#"Trimmed Text5", "Column1.2.2.2.1.1", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.2.2.1.1.1", "Column1.2.2.2.1.1.2"}),
+				    #"Changed Type6" = Table.TransformColumnTypes(#"Split Column by Delimiter5",{{"Column1.2.2.2.1.1.1", type text}, {"Column1.2.2.2.1.1.2", type text}}),
+				    #"Filtered Rows" = Table.SelectRows(#"Changed Type6", each ([Column1.2.2.2.1.2] <> null)),
+				    #"Removed Columns" = Table.RemoveColumns(#"Filtered Rows",{"Column2"}),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Removed Columns", [PromoteAllScalars=true]),
+				    #"Changed Type7" = Table.TransformColumnTypes(#"Promoted Headers",{{"review_id", type text}, {"order_id", type text}, {"review_score", Int64.Type}, {"review_comment_title", type text}, {"review_comment_message", type text}, {"review_creation_date", type datetime}, {"review_answer_timestamp", type datetime}}),
+				    #"Filtered Rows1" = Table.SelectRows(#"Changed Type7", each true),
+				    #"Removed Errors" = Table.RemoveRowsWithErrors(#"Filtered Rows1", {"review_creation_date"}),
+				    #"Filtered Rows2" = Table.SelectRows(#"Removed Errors", each ([review_creation_date] <> null)),
+				    #"Filtered Rows3" = Table.SelectRows(#"Filtered Rows2", each ([review_answer_timestamp] <> null and [review_answer_timestamp] <> "")),
+				    #"Removed Alternate Rows" = Table.AlternateRows(#"Filtered Rows3",76015,1,0),
+				    #"Removed Duplicates" = Table.Distinct(#"Removed Alternate Rows"),
+				    #"Changed Type8" = Table.TransformColumnTypes(#"Removed Duplicates",{{"review_creation_date", type date}, {"review_answer_timestamp", type date}})
+				in
+				    #"Changed Type8"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,131 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 959.57925060233708,
+            "y": 770.33854640817322
+          },
+          "nodeIndex": "Calendar",
+          "nodeLineageTag": "8f08a31d-ec7c-47fd-8dea-f1c9de787736",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 1691.166082381962,
+            "y": 440.88746899027387
+          },
+          "nodeIndex": ".measures",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 567.256312330206
+          },
+          "nodeIndex": "customers",
+          "size": {
+            "height": 211,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "geolocation",
+          "size": {
+            "height": 309.87459768577912,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 820.11062295281488
+          },
+          "nodeIndex": "order_payments",
+          "size": {
+            "height": 261.664315027733,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1407.166082381962,
+            "y": 0
+          },
+          "nodeIndex": "products",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 688.370630499123,
+            "y": 0
+          },
+          "nodeIndex": "order_reviews",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 688.48448229454925,
+            "y": 398.72972522755038
+          },
+          "nodeIndex": "orders",
+          "size": {
+            "height": 551.927554303029,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1267.0286244332719,
+            "y": 509.80631115696508
+          },
+          "nodeIndex": "order_items",
+          "size": {
+            "height": 322.26475398194896,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 63.287087723234059,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

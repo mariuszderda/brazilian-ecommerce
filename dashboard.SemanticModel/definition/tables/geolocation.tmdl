@@ -1,0 +1,89 @@
+table geolocation
+	lineageTag: 332c39bc-19a2-4eb1-89bc-c3ab1d0807d2
+
+	column geolocation_zip_code_prefix
+		dataType: string
+		lineageTag: b3de99a3-8447-428c-98af-e68f24a1a167
+		summarizeBy: none
+		sourceColumn: geolocation_zip_code_prefix
+
+		annotation SummarizationSetBy = Automatic
+
+	column geolocation_lat
+		dataType: string
+		lineageTag: 8d86f51e-547c-466c-9ccc-8bcacd15cb12
+		summarizeBy: none
+		sourceColumn: geolocation_lat
+
+		annotation SummarizationSetBy = Automatic
+
+	column geolocation_lng
+		dataType: string
+		lineageTag: d33ab939-3398-469f-81fa-86805fb0f9d4
+		summarizeBy: none
+		sourceColumn: geolocation_lng
+
+		annotation SummarizationSetBy = Automatic
+
+	column geolocation_city
+		dataType: string
+		lineageTag: 23ffb848-5df7-4666-9bad-f57107ed46e6
+		summarizeBy: none
+		sourceColumn: geolocation_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column geolocation_state
+		dataType: string
+		lineageTag: 7d0b830d-ab25-4e10-bb30-e91fd72b9959
+		summarizeBy: none
+		sourceColumn: geolocation_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column geolocation_state_name
+		dataType: string
+		lineageTag: f7f3b726-3f78-4a61-8b10-d8199ec46c0f
+		summarizeBy: none
+		sourceColumn: geolocation_state_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition geolocation = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\mariu\OneDrive\data-analyst\brazilian-ecommerce\csv\olist_geolocation_dataset.csv"),[Delimiter=";", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}, {"Column2", type text}}),
+				    #"Split Column by Delimiter" = Table.SplitColumn(#"Changed Type", "Column1", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.1", "Column1.2"}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Split Column by Delimiter",{{"Column1.1", type text}, {"Column1.2", type text}}),
+				    #"Trimmed Text" = Table.TransformColumns(#"Changed Type1",{{"Column1.2", Text.Trim, type text}}),
+				    #"Split Column by Delimiter1" = Table.SplitColumn(#"Trimmed Text", "Column1.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.1", "Column1.2.2"}),
+				    #"Changed Type2" = Table.TransformColumnTypes(#"Split Column by Delimiter1",{{"Column1.2.1", type text}, {"Column1.2.2", type text}}),
+				    #"Trimmed Text1" = Table.TransformColumns(#"Changed Type2",{{"Column1.2.2", Text.Trim, type text}}),
+				    #"Split Column by Delimiter2" = Table.SplitColumn(#"Trimmed Text1", "Column1.2.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.2.1", "Column1.2.2.2"}),
+				    #"Changed Type3" = Table.TransformColumnTypes(#"Split Column by Delimiter2",{{"Column1.2.2.1", type text}, {"Column1.2.2.2", type text}}),
+				    #"Trimmed Text2" = Table.TransformColumns(#"Changed Type3",{{"Column1.2.2.2", Text.Trim, type text}}),
+				    #"Split Column by Delimiter3" = Table.SplitColumn(#"Trimmed Text2", "Column1.2.2.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.2.2.1", "Column1.2.2.2.2"}),
+				    #"Changed Type4" = Table.TransformColumnTypes(#"Split Column by Delimiter3",{{"Column1.2.2.2.1", type text}, {"Column1.2.2.2.2", type text}}),
+				    #"Trimmed Text3" = Table.TransformColumns(#"Changed Type4",{{"Column1.2.2.2.2", Text.Trim, type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Trimmed Text3",{"Column2"}),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Removed Columns", [PromoteAllScalars=true]),
+				    #"Changed Type5" = Table.TransformColumnTypes(#"Promoted Headers",{{"geolocation_zip_code_prefix", Int64.Type}, {"geolocation_lat", type text}, {"geolocation_lng", type text}, {"geolocation_city", type text}, {"geolocation_state", type text}}),
+				    #"Changed Type6" = Table.TransformColumnTypes(#"Changed Type5",{{"geolocation_zip_code_prefix", type text}}),
+				    #"Sorted Rows" = Table.Sort(#"Changed Type6",{{"geolocation_lat", Order.Ascending}}),
+				    #"Removed Duplicates" = Table.Distinct(#"Sorted Rows", {"geolocation_lat"}),
+				    #"Removed Duplicates1" = Table.Distinct(#"Removed Duplicates", {"geolocation_zip_code_prefix"}),
+				    #"Removed Duplicates2" = Table.Distinct(#"Removed Duplicates1", {"geolocation_zip_code_prefix"}),
+				    #"Sorted Rows1" = Table.Sort(#"Removed Duplicates2",{{"geolocation_city", Order.Ascending}}),
+				    #"Removed Duplicates3" = Table.Distinct(#"Sorted Rows1"),
+				    #"Merged Queries" = Table.NestedJoin(#"Removed Duplicates3", {"geolocation_state"}, #"state brasil", {"state"}, "state brasil", JoinKind.LeftOuter),
+				    #"Expanded state brasil" = Table.ExpandTableColumn(#"Merged Queries", "state brasil", {"state_name"}, {"state brasil.state_name"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Expanded state brasil",{{"state brasil.state_name", "geolocation_state_name"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

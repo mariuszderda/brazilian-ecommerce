@@ -1,0 +1,87 @@
+table Calendar
+	lineageTag: 8f08a31d-ec7c-47fd-8dea-f1c9de787736
+
+	column Date
+		formatString: General Date
+		lineageTag: ff74b267-8aa2-49cf-a4ed-6b15d240460a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column year
+		formatString: 0
+		lineageTag: 51289581-d403-49ad-b82b-8b5ab06210a3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column month
+		formatString: 0
+		lineageTag: b65da3b4-19f4-45c5-ab67-4918498bd305
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [month]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'month name'
+		lineageTag: d75dfd49-3c90-47d6-b35a-4d866ca823dd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [month name]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'number week day'
+		formatString: 0
+		lineageTag: 88e8aee2-1aee-49ed-95e3-d9e1e3700d90
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [number week day]
+
+		annotation SummarizationSetBy = Automatic
+
+	column quarter
+		lineageTag: e1eb95d0-087e-4ab4-91ed-fbda944f55f4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'month year'
+		lineageTag: 674df716-1d41-400b-a44e-2ce59b750347
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [month year]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendar = calculated
+		mode: import
+		source = ```
+				
+				VAR _min_year = YEAR(MIN(orders[order_purchase_timestamp]))
+				VAR _max_year = YEAR(MAX(orders[order_purchase_timestamp]))
+				VAR _min_date = DATE(_min_year, 1,1)
+				VAR _max_date = Date(_max_year, 12,31)
+				VAR _calendar = CALENDAR(_min_date, _max_date)
+				
+				RETURN 
+				    ADDCOLUMNS(
+				        _calendar,
+				        "year", YEAR([Date]),
+				        "month", MONTH([Date]),
+				        "month name", FORMAT([Date], "MMM"),
+				        "number week day", WEEKDAY([Date],2),
+				        "quarter", FORMAT([Date], "\Qq"),
+				        "month year", RIGHT("0" & MONTH([Date]), 2) & ("-" & YEAR([Date]))
+				    )
+				```
+
+	annotation PBI_Id = 6a89877b674c4ec484e89b0bdaa801b0
+

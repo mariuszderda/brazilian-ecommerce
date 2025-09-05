@@ -1,0 +1,107 @@
+table order_items
+	lineageTag: a1da8375-e025-4d0d-815c-58a45cb8aa36
+
+	column order_id
+		dataType: string
+		lineageTag: 6355dd9a-234b-4c26-824c-ea45ced16236
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_item_id
+		dataType: int64
+		formatString: 0
+		lineageTag: b8034e16-af6a-44a8-b051-fef0d805aa17
+		summarizeBy: sum
+		sourceColumn: order_item_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: string
+		lineageTag: 18cc7c47-a2a5-4890-9860-673d3966c1fe
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_id
+		dataType: string
+		lineageTag: e608ff8e-c448-4c50-8180-575d260ea2cb
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column shipping_limit_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0d081ad9-7a59-4330-9b66-1c07d0373a12
+		summarizeBy: none
+		sourceColumn: shipping_limit_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column price
+		dataType: decimal
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 02bf148c-c764-4636-a4bc-63cb67710c2a
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column freight_value
+		dataType: decimal
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 5b928e8c-513b-4d5c-ae6b-e036884ed9ee
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column price_group = ```
+			
+			    SWITCH(
+			        TRUE(),
+			        order_items[price] < 50, "R$ 1 - R$ 50",
+			        order_items[price] <= 100, "R$ 50 - R$ 100",
+			        order_items[price] <= 150, "R$ 100 - R$ 150",
+			        order_items[price] <= 200, "R$ 150 - R$ 200",
+			        order_items[price] <= 300, "R$ 200 - R$ 300",
+			        "R$ 300 - "
+			    )
+			```
+		lineageTag: 484e993e-f60d-48a8-bb23-6037dbd1d05c
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition order_items = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\mariu\OneDrive\data-analyst\brazilian-ecommerce\csv\olist_order_items_dataset.csv"),[Delimiter=",", Columns=7, Encoding=1250, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"order_id", type text}, {"order_item_id", Int64.Type}, {"product_id", type text}, {"seller_id", type text}, {"shipping_limit_date", type datetime}, {"price", type text}, {"freight_value", type text}}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Changed Type",".",",",Replacer.ReplaceText,{"price"}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Replaced Value",{{"price", Currency.Type}}),
+				    #"Changed Type with Locale" = Table.TransformColumnTypes(#"Changed Type1", {{"price", Currency.Type}}, "pt-BR"),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Changed Type with Locale",".",",",Replacer.ReplaceText,{"freight_value"}),
+				    #"Changed Type with Locale1" = Table.TransformColumnTypes(#"Replaced Value1", {{"freight_value", Currency.Type}}, "pt-BR"),
+				    #"Removed Duplicates" = Table.Distinct(#"Changed Type with Locale1"),
+				    #"Changed Type2" = Table.TransformColumnTypes(#"Removed Duplicates",{{"shipping_limit_date", type date}})
+				in
+				    #"Changed Type2"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,28 @@
+relationship 1205f665-416e-5743-e63d-bf5da3bab03c
+	fromColumn: customers.customer_zip_code_prefix
+	toColumn: geolocation.geolocation_zip_code_prefix
+
+relationship AutoDetected_0dab0862-a20d-4ce9-a1d1-23dd308a2da4
+	fromColumn: order_payments.order_id
+	toColumn: orders.order_id
+
+relationship AutoDetected_2eb33b14-9445-4075-84ce-e22df451d305
+	fromColumn: order_reviews.order_id
+	toColumn: orders.order_id
+
+relationship AutoDetected_b7646ab2-f886-489d-bbc2-e60f76d680df
+	fromColumn: order_items.order_id
+	toColumn: orders.order_id
+
+relationship AutoDetected_100f8ea0-c0e1-4470-ac5b-afb01dfbadcc
+	fromColumn: order_items.product_id
+	toColumn: products.product_id
+
+relationship e7ef4687-93de-e78e-61c9-08ae10e78245
+	fromColumn: orders.order_purchese_date
+	toColumn: Calendar.Date
+
+relationship a2ebaa63-5edd-b1b5-39cf-abbf220343d3
+	fromColumn: orders.customer_id
+	toColumn: customers.customer_id
+

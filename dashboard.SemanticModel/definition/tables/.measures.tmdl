@@ -1,0 +1,112 @@
+table '.measures'
+	lineageTag: f164e926-966b-4e2c-8249-749630a07ecd
+
+	measure 'Average Price' = AVERAGE(order_items[price])
+		formatString: "R$"#,0.00;-"R$"#,0.00;"R$"#,0.00
+		lineageTag: 05209af6-a870-4b76-a634-d1f90acd1c61
+
+		annotation PBI_FormatHint = {"currencyCulture":"es-BR"}
+
+	measure 'Count Of Order' = COUNT(order_items[product_id])
+		formatString: 0
+		lineageTag: fd71721e-66c1-41b9-9f4e-97b1744212de
+
+	measure 'Average Order Value' = AVERAGE(order_payments[payment_value])
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: d5d34ef0-2845-4a55-bb12-4c765fca3da9
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Total Revenue' = SUM(order_items[price]) + SUM(order_items[freight_value])
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: fe2fe463-137a-46e8-a432-c2d3903e5817
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Total Orders' = DISTINCTCOUNT(order_items[order_id])
+		formatString: 0
+		lineageTag: 15720594-96ab-495e-befe-26b35e48c7fb
+
+	measure 'Ordered Item Count' = COUNT(order_items[product_id])
+		formatString: 0
+		lineageTag: 6a2e4ffe-aae5-4e1f-977a-055e677954b8
+
+	measure 'Count Of Products' =
+			
+			CALCULATE(
+			    COUNTROWS(products),
+			    ALLSELECTED(order_items[price_group])
+			)
+		formatString: 0
+		lineageTag: 95cc4e96-8bb4-497f-9823-02d47f17c397
+
+	measure 'Count Of Distinct Customers' = DISTINCTCOUNT(customers[customer_unique_id])
+		formatString: 0
+		lineageTag: aa665c0b-ab7f-4732-adca-b32504d631f9
+
+	measure 'Total Revenue Diff Prevous Month' = ```
+			
+			    VAR _total = [Total Revenue]
+			    VAR _prevoius_month = 
+			        CALCULATE(
+			            [Total Revenue],
+			            PREVIOUSMONTH('Calendar'[Date])
+			        )
+			    VAR _diff = _total - _prevoius_month
+			    VAR _out = 
+			        IF(
+			            HASONEVALUE('Calendar'[month]),
+			            DIVIDE(_diff, _prevoius_month)
+			        )
+			RETURN
+			    _out
+			```
+		formatString: #,0.00%;-#,0.00%;#,0.00%
+		lineageTag: a915aa7a-ab2f-4f02-824b-07211442db89
+
+	measure 'First Purchese Date' = ```
+			
+			    CALCULATE(
+			        MIN(orders[order_purchese_date]),
+			        ALLEXCEPT(orders, orders[customer_id])
+			    )
+			```
+		formatString: General Date
+		displayFolder: Kohort
+		lineageTag: 3e1453be-03e5-44d7-96d9-e22b6b89596c
+
+	measure CohortMonth = ```
+			
+			    FORMAT([First Purchese Date], "YYYY-MM")
+			```
+		displayFolder: Kohort
+		lineageTag: f88f757a-77d0-493c-ae4e-ce054945ef6a
+
+	measure 'Retention Rate' = ```
+			
+			    VAR _total_in_kohort = 
+			        CALCULATE(
+			            COUNTROWS())
+			RETURN
+			    _total_in_kohort
+			```
+		formatString: 0
+		displayFolder: Kohort
+		lineageTag: d607f6da-b9e8-46c3-89e0-1f003d772279
+
+	column Empty
+		isHidden
+		formatString: 0
+		lineageTag: 371b9a84-8cfe-4690-95d5-1a93531a74ea
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Empty]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition '.measures' = calculated
+		mode: import
+		source = ROW("Empty", BLANK())
+
+	annotation PBI_Id = 572f22b3dee747209635718a083f151c
+

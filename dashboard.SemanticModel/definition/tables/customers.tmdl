@@ -1,0 +1,62 @@
+table customers
+	lineageTag: 0499e509-cbd4-451f-911e-25f28224ef09
+
+	column customer_id
+		dataType: string
+		lineageTag: 7e5a0bec-69c3-4016-85d8-773a810ea512
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: 4b87e54f-12a2-4232-84d0-52bdcfb69396
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_zip_code_prefix
+		dataType: string
+		lineageTag: 9bc8073e-02c1-4699-b7ac-923e216c28d2
+		summarizeBy: none
+		sourceColumn: customer_zip_code_prefix
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_city
+		dataType: string
+		lineageTag: a3ed47b1-2710-4424-b64d-ada641e2db66
+		summarizeBy: none
+		sourceColumn: customer_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_state
+		dataType: string
+		lineageTag: a3b912a4-5ea7-493c-b1d1-75acfa5248d4
+		summarizeBy: none
+		sourceColumn: customer_state
+
+		annotation SummarizationSetBy = Automatic
+
+	partition customers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\mariu\OneDrive\data-analyst\brazilian-ecommerce\csv\olist_customers_dataset.csv"),[Delimiter=",", Columns=5, Encoding=1250, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"customer_id", type text}, {"customer_unique_id", type text}, {"customer_zip_code_prefix", Int64.Type}, {"customer_city", type text}, {"customer_state", type text}}),
+				    #"Sorted Rows" = Table.Sort(#"Changed Type",{{"customer_id", Order.Ascending}}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Sorted Rows",{{"customer_zip_code_prefix", type text}}),
+				    #"Removed Duplicates" = Table.Distinct(#"Changed Type1", {"customer_id"}),
+				    #"Removed Duplicates1" = Table.Distinct(#"Removed Duplicates"),
+				    #"Trimmed Text" = Table.TransformColumns(#"Removed Duplicates1",{{"customer_state", Text.Trim, type text}})
+				in
+				    #"Trimmed Text"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

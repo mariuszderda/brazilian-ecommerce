@@ -1,0 +1,127 @@
+table orders
+	lineageTag: 87b46754-81ee-40d0-a3e2-6e71280e83f3
+
+	column order_id
+		dataType: string
+		lineageTag: c2a8e775-e38c-4d9a-8222-0267e86ea0f7
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		lineageTag: 9d996269-350d-4e26-9eb5-4364b17eea35
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_status
+		dataType: string
+		lineageTag: 7ea45ca0-db85-4d28-9c7d-e7d8bf51613c
+		summarizeBy: none
+		sourceColumn: order_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_purchase_timestamp
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 8d69e064-666d-43d1-80f8-44010bc1951e
+		summarizeBy: none
+		sourceColumn: order_purchase_timestamp
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_approved_at
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 815a4a6b-bf90-4f9e-80fc-09eec203dd6f
+		summarizeBy: none
+		sourceColumn: order_approved_at
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_delivered_carrier_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 143fe45b-1c07-4bca-91c7-85b3ba92b6bc
+		summarizeBy: none
+		sourceColumn: order_delivered_carrier_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_delivered_customer_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 95025413-5027-47c8-b838-c8f286a18a6a
+		summarizeBy: none
+		sourceColumn: order_delivered_customer_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_estimated_delivery_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 12f63de7-3278-4b39-bbe0-0b6063123611
+		summarizeBy: none
+		sourceColumn: order_estimated_delivery_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_purchese_date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 9a92ae87-334f-4452-a60c-325862e29aac
+		summarizeBy: none
+		sourceColumn: order_purchese_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition orders = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Users\mariu\OneDrive\data-analyst\brazilian-ecommerce\csv\olist_orders_dataset.csv"),[Delimiter="=", Columns=1, Encoding=1250, QuoteStyle=QuoteStyle.Csv]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Trimmed Text" = Table.TransformColumns(#"Changed Type",{{"Column1", Text.Trim, type text}}),
+				    #"Split Column by Delimiter" = Table.SplitColumn(#"Trimmed Text", "Column1", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.1", "Column1.2"}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Split Column by Delimiter",{{"Column1.1", type text}, {"Column1.2", type text}}),
+				    #"Split Column by Delimiter1" = Table.SplitColumn(#"Changed Type1", "Column1.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.1", "Column1.2.2"}),
+				    #"Split Column by Delimiter2" = Table.SplitColumn(#"Split Column by Delimiter1", "Column1.2.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.2.1", "Column1.2.2.2"}),
+				    #"Changed Type2" = Table.TransformColumnTypes(#"Split Column by Delimiter2",{{"Column1.2.1", type text}, {"Column1.2.2.1", type text}, {"Column1.2.2.2", type text}}),
+				    #"Split Column by Delimiter3" = Table.SplitColumn(#"Changed Type2", "Column1.2.2.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.2.2.1", "Column1.2.2.2.2"}),
+				    #"Changed Type3" = Table.TransformColumnTypes(#"Split Column by Delimiter3",{{"Column1.2.2.2.1", type text}, {"Column1.2.2.2.2", type text}}),
+				    #"Split Column by Delimiter4" = Table.SplitColumn(#"Changed Type3", "Column1.2.2.2.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.2.2.2.1", "Column1.2.2.2.2.2"}),
+				    #"Changed Type4" = Table.TransformColumnTypes(#"Split Column by Delimiter4",{{"Column1.2.2.2.2.1", type text}, {"Column1.2.2.2.2.2", type text}}),
+				    #"Split Column by Delimiter5" = Table.SplitColumn(#"Changed Type4", "Column1.2.2.2.2.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.2.2.2.2.1", "Column1.2.2.2.2.2.2"}),
+				    #"Changed Type5" = Table.TransformColumnTypes(#"Split Column by Delimiter5",{{"Column1.2.2.2.2.2.1", type text}, {"Column1.2.2.2.2.2.2", type text}}),
+				    #"Split Column by Delimiter6" = Table.SplitColumn(#"Changed Type5", "Column1.2.2.2.2.2.2", Splitter.SplitTextByEachDelimiter({","}, QuoteStyle.Csv, false), {"Column1.2.2.2.2.2.2.1", "Column1.2.2.2.2.2.2.2"}),
+				    #"Changed Type6" = Table.TransformColumnTypes(#"Split Column by Delimiter6",{{"Column1.2.2.2.2.2.2.1", type text}, {"Column1.2.2.2.2.2.2.2", type text}}),
+				    #"Promoted Headers" = Table.PromoteHeaders(#"Changed Type6", [PromoteAllScalars=true]),
+				    #"Changed Type7" = Table.TransformColumnTypes(#"Promoted Headers",{{"order_id", type text}, {"customer_id", type text}, {"order_status", type text}, {"order_purchase_timestamp", type datetime}, {"order_approved_at", type datetime}, {"order_delivered_carrier_date", type datetime}, {"order_delivered_customer_date", type datetime}, {"order_estimated_delivery_date", type datetime}}),
+				    #"Inserted Date" = Table.AddColumn(#"Changed Type7", "Date", each DateTime.Date([order_purchase_timestamp]), type date),
+				    #"Renamed Columns" = Table.RenameColumns(#"Inserted Date",{{"Date", "order_purchese_date"}}),
+				    #"Removed Duplicates" = Table.Distinct(#"Renamed Columns"),
+				    #"Changed Type8" = Table.TransformColumnTypes(#"Removed Duplicates",{{"order_purchase_timestamp", type date}, {"order_approved_at", type date}, {"order_delivered_carrier_date", type date}, {"order_delivered_customer_date", type datetime}}),
+				    #"Changed Type9" = Table.TransformColumnTypes(#"Changed Type8",{{"order_delivered_customer_date", type date}, {"order_estimated_delivery_date", type date}})
+				in
+				    #"Changed Type9"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

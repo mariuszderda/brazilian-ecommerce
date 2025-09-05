@@ -1,0 +1,31 @@
+expression product_category_name_translation =
+		let
+		    Source = Csv.Document(File.Contents("C:\Users\mariu\OneDrive\data-analyst\brazilian-ecommerce\csv\product_category_name_translation.csv"),[Delimiter=",", Columns=2, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+		    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}, {"Column2", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: 26c22eae-17e0-4dd3-b215-75c6ad8a7a94
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression 'state brasil' =
+		let
+		    Source = Csv.Document(File.Contents("C:\Users\mariu\OneDrive\data-analyst\brazilian-ecommerce\csv\state brasil.txt"),null,{0, 3, 5},ExtraValues.Ignore,1250),
+		    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}, {"Column2", type text}, {"Column3", type text}}),
+		    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column2"}),
+		    #"Trimmed Text" = Table.TransformColumns(#"Removed Columns",{{"Column1", Text.Trim, type text}, {"Column3", Text.Trim, type text}}),
+		    #"Split Column by Delimiter" = Table.SplitColumn(#"Trimmed Text", "Column3", Splitter.SplitTextByEachDelimiter({"-"}, QuoteStyle.Csv, false), {"Column3.1", "Column3.2"}),
+		    #"Changed Type1" = Table.TransformColumnTypes(#"Split Column by Delimiter",{{"Column3.1", type text}, {"Column3.2", type text}}),
+		    #"Removed Columns1" = Table.RemoveColumns(#"Changed Type1",{"Column3.2"}),
+		    #"Removed Blank Rows" = Table.SelectRows(#"Removed Columns1", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+		    #"Renamed Columns" = Table.RenameColumns(#"Removed Blank Rows",{{"Column1", "state"}, {"Column3.1", "state_name"}})
+		in
+		    #"Renamed Columns"
+	lineageTag: 27cbe571-e8b7-4346-a244-093320643029
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

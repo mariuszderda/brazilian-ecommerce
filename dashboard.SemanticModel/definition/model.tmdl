@@ -1,0 +1,28 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pl-PL
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBIDesktopVersion = 2.146.1254.0 (25.08)+791a7518fadc83da883d79322a2658aff57c8db3
+
+annotation PBI_QueryOrder = ["customers","geolocation","order_payments","products","product_category_name_translation","order_reviews","orders","order_items","state brasil"]
+
+annotation PBI_ProTooling = ["DaxQueryView_Desktop","DevMode"]
+
+ref table customers
+ref table geolocation
+ref table order_payments
+ref table products
+ref table order_reviews
+ref table orders
+ref table order_items
+ref table Calendar
+ref table '.measures'
+
+ref cultureInfo en-US
+
