@@ -1,0 +1,46 @@
+table 'Months After'
+	lineageTag: 172c01ca-5883-4952-a3ef-89797c274f4f
+
+	measure One = 1
+		formatString: 0
+		lineageTag: f6f2f322-749f-44a4-8fe8-555958238a06
+
+	measure 'Current Retention %' = ```
+			
+			    VAR __CurrentMonthAfter = SELECTEDVALUE('Months After'[Value])
+			    VAR __CurrentFirstOrderMonth = SELECTEDVALUE(orders[First Order Date (EOM)])
+			RETURN
+			    DIVIDE(
+			        CALCULATE(
+			            DISTINCTCOUNT(orders[customer_unique_id]),
+			            FILTER(
+			                orders,
+			                EOMONTH(orders[order_purchese_date],0) = EOMONTH(__CurrentFirstOrderMonth, __CurrentMonthAfter)
+			            )
+			        ),
+			        CALCULATE(
+			            DISTINCTCOUNT(orders[customer_unique_id])
+			        )
+			    )
+			
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: ee1948b4-3763-4371-b156-0f25b1a00a1f
+
+	column Value
+		formatString: 0
+		lineageTag: ad0c394a-6aac-49a3-8dc3-2d0f6e1b3497
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Months After' = calculated
+		mode: import
+		source =
+				
+				GENERATESERIES(0,12,1)
+
+	annotation PBI_Id = 4186b2d505aa4dfda04de68a28eb7fc1
+

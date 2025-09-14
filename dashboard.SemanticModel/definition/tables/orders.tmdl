@@ -91,6 +91,37 @@ table orders
 
 		annotation UnderlyingDateTimeDataType = Date
 
+	column customer_unique_id
+		dataType: string
+		lineageTag: 278bf3cb-599c-42fa-aa18-18deffab5644
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'First Order Date (EOM)' = ```
+			
+			    VAR __CurrentCustomer = orders[customer_unique_id]
+			RETURN
+			    CALCULATE(
+			        EOMONTH(MIN(orders[order_purchese_date]),0),
+			        FILTER(
+			            orders,
+			            orders[customer_unique_id] = __CurrentCustomer
+			            ))
+			```
+		formatString: yyyy-mm
+		lineageTag: d253a1f7-6f1a-4b4d-b749-0ba70b06cc82
+		summarizeBy: none
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
 	partition orders = m
 		mode: import
 		source =
@@ -117,9 +148,12 @@ table orders
 				    #"Renamed Columns" = Table.RenameColumns(#"Inserted Date",{{"Date", "order_purchese_date"}}),
 				    #"Removed Duplicates" = Table.Distinct(#"Renamed Columns"),
 				    #"Changed Type8" = Table.TransformColumnTypes(#"Removed Duplicates",{{"order_purchase_timestamp", type date}, {"order_approved_at", type date}, {"order_delivered_carrier_date", type date}, {"order_delivered_customer_date", type datetime}}),
-				    #"Changed Type9" = Table.TransformColumnTypes(#"Changed Type8",{{"order_delivered_customer_date", type date}, {"order_estimated_delivery_date", type date}})
+				    #"Changed Type9" = Table.TransformColumnTypes(#"Changed Type8",{{"order_delivered_customer_date", type date}, {"order_estimated_delivery_date", type date}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Changed Type9", {"customer_id"}, customers, {"customer_id"}, "customers", JoinKind.LeftOuter),
+				    #"Expanded customers" = Table.ExpandTableColumn(#"Merged Queries", "customers", {"customer_unique_id"}, {"customers.customer_unique_id"}),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Expanded customers",{{"customers.customer_unique_id", "customer_unique_id"}})
 				in
-				    #"Changed Type9"
+				    #"Renamed Columns1"
 
 	annotation PBI_NavigationStepName = Navigation
 

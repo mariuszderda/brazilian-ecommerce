@@ -17,13 +17,13 @@ table '.measures'
 
 		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
 
-	measure 'Total Revenue' = SUM(order_items[price]) + SUM(order_items[freight_value])
+	measure 'Total Revenue' = SUMX(order_items, order_items[price] + order_items[freight_value])
 		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
 		lineageTag: fe2fe463-137a-46e8-a432-c2d3903e5817
 
 		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
 
-	measure 'Total Orders' = DISTINCTCOUNT(order_items[order_id])
+	measure 'Total Orders' = DISTINCTCOUNT(orders[order_id])
 		formatString: 0
 		lineageTag: 15720594-96ab-495e-befe-26b35e48c7fb
 
@@ -50,12 +50,12 @@ table '.measures'
 			    VAR _prevoius_month = 
 			        CALCULATE(
 			            [Total Revenue],
-			            PREVIOUSMONTH('Calendar'[Date])
+			            PREVIOUSMONTH('calendar'[Date])
 			        )
 			    VAR _diff = _total - _prevoius_month
 			    VAR _out = 
 			        IF(
-			            HASONEVALUE('Calendar'[month]),
+			            HASONEVALUE('calendar'[month]),
 			            DIVIDE(_diff, _prevoius_month)
 			        )
 			RETURN
@@ -68,18 +68,18 @@ table '.measures'
 			
 			    CALCULATE(
 			        MIN(orders[order_purchese_date]),
-			        ALLEXCEPT(orders, orders[customer_id])
+			        ALLEXCEPT(customers,customers[customer_unique_id])
 			    )
 			```
 		formatString: General Date
-		displayFolder: Kohort
+		displayFolder: cohort
 		lineageTag: 3e1453be-03e5-44d7-96d9-e22b6b89596c
 
 	measure CohortMonth = ```
 			
 			    FORMAT([First Purchese Date], "YYYY-MM")
 			```
-		displayFolder: Kohort
+		displayFolder: cohort
 		lineageTag: f88f757a-77d0-493c-ae4e-ce054945ef6a
 
 	measure 'Retention Rate' = ```
@@ -91,8 +91,89 @@ table '.measures'
 			    _total_in_kohort
 			```
 		formatString: 0
-		displayFolder: Kohort
+		displayFolder: cohort
 		lineageTag: d607f6da-b9e8-46c3-89e0-1f003d772279
+
+	measure Cohort = ```
+			
+			    CALCULATE(MIN(orders[order_purchese_date]), ALLEXCEPT(orders, orders[customer_id]))
+			```
+		formatString: General Date
+		displayFolder: cohort
+		lineageTag: e3d68df0-e747-42a7-820f-84c1263110b2
+
+	measure 'TOP10 client revenue' = ```
+			
+			CALCULATE(
+			    [Total Revenue],
+			    TOPN(10, ALL(customers[customer_unique_id]), [Total Revenue]),
+			    VALUES(customers[customer_unique_id])
+			)
+			
+			```
+		formatString: "R$"#,0.00;-"R$"#,0.00;"R$"#,0.00
+		lineageTag: fce0f1b3-dc1d-4b17-81bf-a35e9f3c4a92
+
+		annotation PBI_FormatHint = {"currencyCulture":"es-BR"}
+
+	measure 'TOP10 client orders' = ```
+			
+			CALCULATE(
+			    [Total Orders],
+			    TOPN(10, ALL(customers[customer_unique_id]), [Total Orders]),
+			    VALUES(customers[customer_unique_id])
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 4823e861-10b9-4b97-82b6-0b246cb1dc1c
+
+	measure 'Total Revenue Diff Prevous Year' = ```
+			
+			    VAR _total = [Total Revenue]
+			    VAR _prevoius_year = 
+			        CALCULATE(
+			            [Total Revenue],
+			            PREVIOUSYEAR('calendar'[Date])
+			        )
+			    VAR _diff = _total - _prevoius_year
+			    VAR _out = 
+			        IF(
+			            HASONEVALUE('calendar'[month]),
+			            DIVIDE(_diff, _prevoius_year)
+			        )
+			RETURN
+			    _out
+			```
+		lineageTag: daa5e493-505b-4cda-a5da-88acca9e438d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'TOP10 client revenue - order count' = ```
+			
+			CALCULATE(
+			    [Total Orders],
+			    TOPN(10, ALL(customers[customer_unique_id]), [Total Revenue]),
+			    VALUES(customers[customer_unique_id])
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 1d48f00f-5215-47aa-b512-01a62bf7392f
+
+	measure 'TOP10 client orders - revenue' = ```
+			
+			CALCULATE(
+			    [Total Revenue],
+			    TOPN(10, ALL(customers[customer_unique_id]), [Total Orders]),
+			    VALUES(customers[customer_unique_id])
+			)
+			
+			```
+		formatString: "R$"#,0.00;-"R$"#,0.00;"R$"#,0.00
+		lineageTag: 3c491079-25b3-47f0-b605-1c7d67b45453
+
+		annotation PBI_FormatHint = {"currencyCulture":"es-BR"}
 
 	column Empty
 		isHidden

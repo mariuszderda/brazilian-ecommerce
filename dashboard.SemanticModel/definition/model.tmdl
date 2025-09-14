@@ -21,8 +21,9 @@ ref table products
 ref table order_reviews
 ref table orders
 ref table order_items
-ref table Calendar
+ref table calendar
 ref table '.measures'
+ref table 'Months After'
 
 ref cultureInfo en-US
 

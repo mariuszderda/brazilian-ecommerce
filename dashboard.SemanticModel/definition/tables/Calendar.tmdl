@@ -1,4 +1,4 @@
-table Calendar
+table calendar
 	lineageTag: 8f08a31d-ec7c-47fd-8dea-f1c9de787736
 
 	column Date
@@ -61,7 +61,7 @@ table Calendar
 
 		annotation SummarizationSetBy = Automatic
 
-	partition Calendar = calculated
+	partition calendar = calculated
 		mode: import
 		source = ```
 				

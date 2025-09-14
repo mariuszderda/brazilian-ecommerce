@@ -1,0 +1,14 @@
+// Write your formula below, select 'Run' to try it out. When ready, select 'Update model' to add the measure to your model.
+EVALUATE
+VAR __top = 
+	TOPN(
+		10,
+		VALUES(customers[customer_unique_id]),
+		[Total Revenue]
+	)
+VAR __out = 
+    CALCULATE(
+        [Total Revenue]
+        ,__top
+    )
+RETURN __out

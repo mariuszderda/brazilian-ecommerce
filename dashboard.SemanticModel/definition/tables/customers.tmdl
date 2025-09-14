@@ -7,6 +7,8 @@ table customers
 		summarizeBy: none
 		sourceColumn: customer_id
 
+		changedProperty = IsHidden
+
 		annotation SummarizationSetBy = Automatic
 
 	column customer_unique_id
@@ -14,6 +16,8 @@ table customers
 		lineageTag: 4b87e54f-12a2-4232-84d0-52bdcfb69396
 		summarizeBy: none
 		sourceColumn: customer_unique_id
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
@@ -23,6 +27,8 @@ table customers
 		summarizeBy: none
 		sourceColumn: customer_zip_code_prefix
 
+		changedProperty = IsHidden
+
 		annotation SummarizationSetBy = Automatic
 
 	column customer_city
@@ -31,6 +37,8 @@ table customers
 		summarizeBy: none
 		sourceColumn: customer_city
 
+		changedProperty = IsHidden
+
 		annotation SummarizationSetBy = Automatic
 
 	column customer_state
@@ -38,6 +46,8 @@ table customers
 		lineageTag: a3b912a4-5ea7-493c-b1d1-75acfa5248d4
 		summarizeBy: none
 		sourceColumn: customer_state
+
+		changedProperty = IsHidden
 
 		annotation SummarizationSetBy = Automatic
 
@@ -55,6 +65,8 @@ table customers
 				    #"Trimmed Text" = Table.TransformColumns(#"Removed Duplicates1",{{"customer_state", Text.Trim, type text}})
 				in
 				    #"Trimmed Text"
+
+	changedProperty = IsHidden
 
 	annotation PBI_NavigationStepName = Navigation
 
