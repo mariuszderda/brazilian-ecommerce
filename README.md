@@ -36,11 +36,11 @@ The final output is a multi-page, interactive dashboard built in **Power BI**, d
 
 # This script serves as a lightweight ETL (Extract, Transform, Load) tool to set up the project's database.
 Its primary responsibilities are:
-1. Environment Configuration:** Loads the database connection string securely from a `.env` file to keep credentials out of the source code.
-2. Schema Definition:** Uses a dictionary of SQL DDL commands to define the structure for all necessary tables.
-3. Automated Table Creation:** Iterates through the defined tables and executes `CREATE TABLE IF NOT EXISTS` commands, making the script safe to run multiple times.
-4. Data Ingestion:** For each table, it locates the corresponding `.csv` file, skips the header, and uses the efficient `copy_from` method of `psycopg2` to bulk-insert the data.
-5. Error Handling:** Includes basic error handling for database connection issues and missing source files.
+1. Environment Configuration: Loads the database connection string securely from a `.env` file to keep credentials out of the source code.
+2. Schema Definition: Uses a dictionary of SQL DDL commands to define the structure for all necessary tables.
+3. Automated Table Creation: Iterates through the defined tables and executes `CREATE TABLE IF NOT EXISTS` commands, making the script safe to run multiple times.
+4. Data Ingestion: For each table, it locates the corresponding `.csv` file, skips the header, and uses the efficient `copy_from` method of `psycopg2` to bulk-insert the data.
+5. Error Handling: Includes basic error handling for database connection issues and missing source files.
 
 ## Tools & Technologies
 
